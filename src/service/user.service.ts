@@ -66,12 +66,16 @@ export class UserService {
   //     return existUser;
   //   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll() {
+    return await this.userRepository.find({});
   }
 
   async findOne(id) {
     return await this.userRepository.findOne(id);
+  }
+
+  async findOneByName(username: string) {
+    return await this.userRepository.findOne({ where: { username } });
   }
 
   async findByOpenid(openid: string) {

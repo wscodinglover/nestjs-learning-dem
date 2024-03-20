@@ -11,6 +11,10 @@ import { AuthService } from '../service';
 import { UserModule } from './user.module';
 import { LocalStorage, JwtStorage } from '../strategy';
 
+// 全局使用校验
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from '../guard/auth.guard';
+
 // const jwtModule = JwtModule.register({
 //     secret:"xxx"
 // })
@@ -19,6 +23,7 @@ const jwtModule = JwtModule.registerAsync({
   inject: [ConfigService],
   useFactory: async (configService: ConfigService) => {
     return {
+      // global: true, //是否是全局的验证
       secret: configService.get('SECRET', 'test123456'),
       signOptions: { expiresIn: '4h' },
     };
@@ -34,7 +39,15 @@ const jwtModule = JwtModule.registerAsync({
     UserModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStorage, JwtStorage],
+  providers: [
+    AuthService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    LocalStorage,
+    JwtStorage,
+  ],
   exports: [jwtModule],
 })
 export class AuthModule {}

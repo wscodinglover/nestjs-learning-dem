@@ -11,6 +11,7 @@ import {
   UseGuards,
   Request,
   Req,
+  Query,
 } from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import {
@@ -27,6 +28,7 @@ import {
 } from '@nestjs/swagger';
 
 import { AuthGuard } from '@nestjs/passport';
+import { Public } from 'src/strategy/public.auth';
 
 @ApiTags('用户')
 @Controller('user')
@@ -36,6 +38,7 @@ export class UserController {
   @ApiOperation({ summary: '注册用户' })
   @ApiResponse({ status: 201, type: UserInfoDto })
   @UseInterceptors(ClassSerializerInterceptor)
+  @Public() //不需要校验token
   @Post('register')
   register(@Body() createUser: CreateUserDto) {
     return this.userService.register(createUser);
@@ -47,6 +50,11 @@ export class UserController {
   @Get()
   async getUserInfo(@Req() req) {
     return req.user;
+  }
+
+  @Post('/list')
+  getUserList() {
+    return this.userService.findAll();
   }
 
   @Get(':id')

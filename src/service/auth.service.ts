@@ -11,6 +11,7 @@ import {
 } from '../interface/auth.interface';
 import { lastValueFrom, map, Observable } from 'rxjs';
 import { AxiosResponse } from 'axios';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -26,10 +27,13 @@ export class AuthService {
   }
 
   async login(user: Partial<UserEntity>) {
+    const userdata = await this.userService.findOneByName(user.username);
+    console.log('-userdata--', userdata);
+
     const token = this.createToken({
-      id: user.id,
-      username: user.username,
-      role: user.role,
+      id: userdata.id,
+      username: userdata.username,
+      role: userdata.role,
     });
 
     return { token };

@@ -10,11 +10,10 @@ import {
   Post,
   Req,
   Res,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { WechatLoginDto } from '../dto/auth/wechat-login.dto';
+import { Public } from 'src/strategy/public.auth';
 
 @ApiTags('验证')
 @Controller('auth')
@@ -22,11 +21,11 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: '登录' })
-  @UseGuards(AuthGuard('local'))
   @UseInterceptors(ClassSerializerInterceptor)
+  @Public()
   @Post('login')
-  async login(@Body() user: LoginDto, @Req() req) {
-    return await this.authService.login(req.user);
+  async login(@Body() user: LoginDto) {
+    return await this.authService.login(user);
   }
 
   @ApiOperation({ summary: '微信登录跳转' })
